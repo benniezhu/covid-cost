@@ -259,6 +259,21 @@ Combined <- Combined %>%
 Combined <- Combined %>%
   mutate(nonicucost = nonicuhosp*nonicucost_pervisit)
 
+#remove unneeded variables 
+Combined <- select(Combined, -c('nonicucost_low.x',	'nonicucost_high.x','nonicucost_low.y',	'nonicucost_high.y' ))
+
+
+# Merge in the icu costs 
+icucost <- read_csv("data/icucost.csv")
+
+Combined <- right_join(Combined, 
+                   icucost,
+                   by = c('insurance', 'uninsured_as'))
+
+Combined <- Combined %>%
+  mutate(icucost = icucost_pervisit* ICUs)
+
+
 #Test Plots 
 ggplot(filter(test, (location_name == 'California' ) & IHME == 'Medium' & Wave == 'combined'), aes(x = location_name, y = ICUs, fill = insurance))+
   geom_bar(stat = 'identity')
