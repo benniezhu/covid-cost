@@ -284,3 +284,7 @@ rm(list=(ls()[ls()!="Combined"]))
 #Capitalize Insurance 
 library(stringr)
 Combined$insurance <- str_to_title(Combined$insurance)
+
+
+#Export data to a csv 
+write.csv(Combined, 'Combined.csv')

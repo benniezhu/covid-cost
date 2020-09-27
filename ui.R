@@ -1,13 +1,11 @@
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
-#import states
 library(readr)
+
+#Import States
 States <- read_csv("data/States.csv")
 
-#Import Data
-
-acs_long <- read_csv("data/acs_long.csv")
 
 #Shiny UI
 

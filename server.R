@@ -2,7 +2,10 @@ library(shiny)
 library(shinydashboard)
 
 shinyServer(function(input,output){
-
+  
+  #Import Data
+  
+  Combined <- read_csv("Combined.csv")
   
   output$hosp_plot <- renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
