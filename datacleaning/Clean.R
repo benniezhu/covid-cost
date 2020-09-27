@@ -277,3 +277,10 @@ Combined <- Combined %>%
 
 Combined <- Combined %>%
   mutate(hospitalizationcost = nonicucost+icucost)
+
+# remove unneeded dataframes 
+rm(list=(ls()[ls()!="Combined"]))
+
+#Capitalize Insurance 
+library(stringr)
+Combined$insurance <- str_to_title(Combined$insurance)
