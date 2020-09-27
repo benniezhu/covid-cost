@@ -281,10 +281,57 @@ Combined <- Combined %>%
 # remove unneeded dataframes 
 rm(list=(ls()[ls()!="Combined"]))
 
+#Add OOP
+oopcost <- read_csv('data/oopcost.csv')
+
+
 #Capitalize Insurance 
 library(stringr)
 Combined$insurance <- str_to_title(Combined$insurance)
 
+Combined <- right_join(Combined,
+                       oopcost,
+                       by = c('uninsured_as', 'insurance', 'inpatientcost_assumption'))
+
+Combined <- Combined %>%
+  mutate(icucost_oop = ICUs * icucost_oop_pervisit)
+
+Combined <- Combined %>%
+  mutate(nonicucost_oop = nonicuhosp * nonicucost_oop_pervisit)
+
+Combined <- Combined %>%
+  mutate(icucost_reimbursed = icucost - icucost_oop)
+
+Combined <- Combined %>%
+  mutate(nonicucost_reimbursed = nonicucost - nonicucost_oop)
+
+Combined_hospitalizations <- gather(select(Combined, -c('nonicucost' , 'icucost', 'hospitalizationcost', 'icucost_oop', 'icucost_reimbursed')),
+                                    oop_or_reimbursed ,nonicucost,
+                                    nonicucost_reimbursed, nonicucost_oop, factor_key = FALSE)
+
+Combined_hospitalizations$oop_or_reimbursed[Combined_hospitalizations$oop_or_reimbursed == 'nonicucost_reimbursed'] <- 'Reimbursed'
+Combined_hospitalizations$oop_or_reimbursed[Combined_hospitalizations$oop_or_reimbursed == 'nonicucost_oop'] <- 'OOP'
+
+Combined_icu <- gather(select(Combined, -c('nonicucost', 'icucost', 'hospitalizationcost', 'hospitalizationcost_oop', 'hospitalizationcost_reimbursed')),
+                       oop_or_reimbursed, icucost,
+                       icucost_reimbursed, icucost_oop, factor_key = FALSE)
+
+Combined_icu$oop_or_reimbursed[Combined_icu$oop_or_reimbursed == 'icucost_reimbursed'] <- 'Reimbursed'
+Combined_icu$oop_or_reimbursed[Combined_icu$oop_or_reimbursed == 'icucost_oop'] <- 'OOP'
+
+
+Combined <- right_join(Combined_hospitalizations,
+                   Combined_icu %>% select(c(state, IHME, age_group, inpatientcost_assumption, insurance, uninsured_as, Wave, oop_or_reimbursed, icucost)),
+                   by = c('state', 'IHME', 'age_group', 'insurance', 'oop_or_reimbursed', 'Wave', 'inpatientcost_assumption', 'uninsured_as'))
+
+Combined$payer <- paste(Combined$insurance , Combined$oop_or_reimbursed, sep = " ")
+
+Combined <- Combined %>%
+  mutate(hospitalizationcost = nonicucost + icucost)
+
+#Capitalize Payer 
+Combined$payer <- str_to_title(Combined$payer)
 
 #Export data to a csv 
 write.csv(Combined, 'Combined.csv')
+

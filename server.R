@@ -5,7 +5,7 @@ shinyServer(function(input,output){
   
   #Import Data
   
-  Combined <- read_csv("Combined.csv")
+  # Comment this out for local testing atm Combined <- read_csv("Combined.csv")
   
   output$hosp_plot <- renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
@@ -34,15 +34,15 @@ shinyServer(function(input,output){
   
   output$nonicuhosp_cost_plot <-renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
-           aes(x = location_name, y = nonicucost/1000000, fill = insurance))+
+           aes(x = location_name, y = (nonicucost)/1000000, fill = payer))+
       geom_bar(stat = 'identity')+
-      xlab('State') + ylab('Cost of Non-ICU Admissions') + labs(fill = 'Insurance')+
+      xlab('State') + ylab('Cost of Non-ICU Admissions in $Millions') + labs(fill = 'Insurance')+
       theme(axis.text =  element_text(angle = 90))
   })
   
   output$icu_cost_plot <-renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
-           aes(x = location_name, y = icucost/1000000, fill = insurance))+
+           aes(x = location_name, y = icucost/1000000, fill = payer))+
       geom_bar(stat = 'identity')+
       xlab('State') + ylab('Cost of ICU Admissions in $Millions') + labs(fill = 'Insurance')+
       theme(axis.text =  element_text(angle = 90))
@@ -50,9 +50,9 @@ shinyServer(function(input,output){
   
   output$hosp_cost_plot <-renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
-           aes(x = location_name, y = hospitalizationcost/1000000, fill = insurance))+
+           aes(x = location_name, y = hospitalizationcost/1000000, fill = payer))+
       geom_bar(stat = 'identity')+
-      xlab('State') + ylab('Cost of Hospital Admissions Admissions') + labs(fill = 'Insurance')+
+      xlab('State') + ylab('Cost of Hospital Admissions Admissions in $Millions') + labs(fill = 'Insurance')+
       theme(axis.text =  element_text(angle = 90))
   })
   
