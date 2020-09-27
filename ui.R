@@ -1,6 +1,6 @@
 library(shiny)
 library(shinydashboard)
-
+library(tidyverse)
 #import states
 library(readr)
 States <- read_csv("data/States.csv")
@@ -22,6 +22,8 @@ shinyUI(
                   multiple = TRUE
                   ),
       
+      selectInput(inputId = "Wave", "Please Select Wave",
+                  choices = c("First", "Second", "Combined")),
       
       selectInput("IHME", "Please Select IHME Projection",
                   choices = c('Low', 'Medium', 'High'))
@@ -30,11 +32,16 @@ shinyUI(
   
   dashboardBody(
     fluidRow(
-      box(title = 'Hospitalizations', 
-          plotOutput("Wave1_hosp"),
+      box(title = 'Total Hospitalizations', 
+          plotOutput("hosp_plot"),
           ),
       
-      box(plotOutput("Wave1_Hosp"))
+      box(title = 'Non-ICU Hospitalizations',
+          plotOutput("Wave1_nonicuhosp_plot")),
+      
+      box(title = 'ICU Admissions',
+          plotOutput("Wave1_icu_plot"),
+          )
     )
   )
 )
