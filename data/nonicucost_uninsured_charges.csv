@@ -1,0 +1,9 @@
+﻿insurance,inpatientcost_assumption,nonicucost_charges
+private,Low,12692
+uninsured,Low,24582
+medicare,Low,9247
+medicaid,Low,5548
+private,High,21936
+uninsured,High,42486
+medicare,High,9247
+medicaid,High,5548

@@ -1,0 +1,9 @@
+﻿insurance,uninsured_as,icucost_pervisit
+private,Medicare,88114
+uninsured,Medicare,48262
+medicare,Medicare,48262
+medicaid,Medicare,46133
+private,Charges,88114
+uninsured,Charges,170661
+medicare,Charges,48262
+medicaid,Charges,46133
