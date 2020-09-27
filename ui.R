@@ -26,22 +26,40 @@ shinyUI(
                   choices = c("First", "Second", "Combined")),
       
       selectInput("IHME", "Please Select IHME Projection",
-                  choices = c('Low', 'Medium', 'High'))
+                  choices = c('Low', 'Medium', 'High')),
+      
+      selectInput(inputId = "inpatientcost", "Inpatient Cost (Private Insurance Only)",
+                  choices = c("Low", "High")),
+     
+      selectInput(inputId = 'uninsuredinpatientcost' , "Treat Uninsured Inpatient Cost as",
+                  choices = c("Medicare", "Charges")),
+      
+      selectInput(inputId = 'uninsuredoop', "Out of Pocket Payment Assumption",
+                  choices = c('Reduced', 'Full'))
       
   ),
   
   dashboardBody(
     fluidRow(
       box(title = 'Total Hospitalizations', 
-          plotOutput("hosp_plot"),
-          ),
+          plotOutput("hosp_plot")),
+      
+      box(title = 'Total Hospitalizations Cost by Coverage and Payer',
+          plotOutput("hosp_cost_plot")),
       
       box(title = 'Non-ICU Hospitalizations',
-          plotOutput("Wave1_nonicuhosp_plot")),
+          plotOutput("nonicuhosp_plot")),
+      
+      box(title = 'Non-ICU Cost by Coverage and Payer',
+          plotOutput("nonicuhosp_cost_plot")),
+      
       
       box(title = 'ICU Admissions',
-          plotOutput("Wave1_icu_plot"),
-          )
+          plotOutput("icu_plot")),
+      
+      box(title = 'ICU Admissions Cost by Coverage and Payer',
+          plotOutput("icu_cost_plot")),
+      
     )
   )
 )

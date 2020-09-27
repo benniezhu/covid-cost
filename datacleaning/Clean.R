@@ -3,6 +3,7 @@
 library(haven)
 library(tidyverse)
 library(RStata)
+library(readr)
 Hospitalizations_wave1 <- read_dta("data/Hospitalizations_wave1.dta")
 Hospitalizations_wave1$state <- tolower(Hospitalizations_wave1$location_name)
 View(Hospitalizations_wave1)
@@ -211,11 +212,52 @@ Combined <- right_join(Combined_hospitalizations,
                    Combined_icu %>% select(c(state, IHME, age_group, insurance, ICUs, Wave)),
                    by = c('state' , 'IHME', 'age_group', 'insurance', 'Wave'))
 
-Combined <- test %>%
+Combined <- Combined %>%
   mutate(nonicuhosp = Hospitalizations - ICUs)
 
 rm(Combined_hospitalizations)
 rm(Combined_icu)
+
+
+#Add Inpatient Non ICU Cost 
+
+#Import the data from multipler sheets 
+
+#the medicare sheet is wide ; we will use it to reshape and make an assumption column on which we can match the other subsequent cost
+nonicucost_uninsured_medicare <- read_csv("data/nonicucost_uninsured_medicare.csv")
+
+nonicucost_uninsured_charges <- read_csv("data/nonicucost_uninsured_charges.csv")
+
+
+#merge medicare and reshape
+
+Combined <- right_join(Combined, 
+                   nonicucost_uninsured_medicare,
+                   by = 'insurance')
+
+Combined <- gather(Combined, inpatientcost_assumption, nonicucost, nonicucost_low, nonicucost_high, factor_key = FALSE)
+
+Combined$inpatientcost_assumption[Combined$inpatientcost_assumption == 'nonicucost_low'] <- 'Low'
+Combined$inpatientcost_assumption[Combined$inpatientcost_assumption == 'nonicucost_high'] <- 'High'
+
+#merge in the charges costs 
+
+Combined <- right_join(Combined,
+                   nonicucost_uninsured_charges,
+                   by = c('insurance', 'inpatientcost_assumption'))
+
+Combined <- gather(Combined, key = 'uninsured_as', value = 'nonicucost', nonicucost, nonicucost_charges , factor_key = FALSE )
+
+Combined$uninsured_as[Combined$uninsured_as == 'nonicucost'] <- 'Medicare'
+Combined$uninsured_as[Combined$uninsured_as == 'nonicucost_charges'] <- 'Charges'
+
+Combined <- Combined %>%
+  rename(
+    nonicucost_pervisit = nonicucost
+  )
+
+Combined <- Combined %>%
+  mutate(nonicucost = nonicuhosp*nonicucost_pervisit)
 
 #Test Plots 
 ggplot(filter(test, (location_name == 'California' ) & IHME == 'Medium' & Wave == 'combined'), aes(x = location_name, y = ICUs, fill = insurance))+
