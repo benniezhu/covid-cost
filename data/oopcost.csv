@@ -1,0 +1,17 @@
+﻿insurance,inpatientcost_assumption,uninsured_as,nonicucost_oop_pervisit,icucost_oop_pervisit
+private,Low,Medicare,1300,1300
+uninsured,Low,Medicare,9247,1408
+medicare,Low,Medicare,1408,1408
+medicaid,Low,Medicare,0,0
+private,High,Medicare,2247,2247
+uninsured,High,Medicare,9247,1408
+medicare,High,Medicare,1408,1408
+medicaid,High,Medicare,0,0
+private,Low,Charges,1300,1300
+uninsured,Low,Charges,24582,170661
+medicare,Low,Charges,1408,1408
+medicaid,Low,Charges,0,0
+private,High,Charges,1800,1800
+uninsured,High,Charges,42486,170661
+medicare,High,Charges,1408,1408
+medicaid,High,Charges,0,0
