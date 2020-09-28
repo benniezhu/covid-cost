@@ -259,8 +259,6 @@ Combined <- Combined %>%
 Combined <- Combined %>%
   mutate(nonicucost = nonicuhosp*nonicucost_pervisit)
 
-#remove unneeded variables 
-Combined <- select(Combined, -c('nonicucost_low.x',	'nonicucost_high.x','nonicucost_low.y',	'nonicucost_high.y' ))
 
 
 # Merge in the icu costs 
@@ -285,10 +283,6 @@ rm(list=(ls()[ls()!="Combined"]))
 oopcost <- read_csv('data/oopcost.csv')
 
 
-#Capitalize Insurance 
-library(stringr)
-Combined$insurance <- str_to_title(Combined$insurance)
-
 Combined <- right_join(Combined,
                        oopcost,
                        by = c('uninsured_as', 'insurance', 'inpatientcost_assumption'))
@@ -312,7 +306,7 @@ Combined_hospitalizations <- gather(select(Combined, -c('nonicucost' , 'icucost'
 Combined_hospitalizations$oop_or_reimbursed[Combined_hospitalizations$oop_or_reimbursed == 'nonicucost_reimbursed'] <- 'Reimbursed'
 Combined_hospitalizations$oop_or_reimbursed[Combined_hospitalizations$oop_or_reimbursed == 'nonicucost_oop'] <- 'OOP'
 
-Combined_icu <- gather(select(Combined, -c('nonicucost', 'icucost', 'hospitalizationcost', 'hospitalizationcost_oop', 'hospitalizationcost_reimbursed')),
+Combined_icu <- gather(select(Combined, -c('nonicucost', 'icucost', 'hospitalizationcost', 'nonicucost_oop', 'nonicucost_reimbursed')),
                        oop_or_reimbursed, icucost,
                        icucost_reimbursed, icucost_oop, factor_key = FALSE)
 
@@ -329,8 +323,34 @@ Combined$payer <- paste(Combined$insurance , Combined$oop_or_reimbursed, sep = "
 Combined <- Combined %>%
   mutate(hospitalizationcost = nonicucost + icucost)
 
+#Add Full or reduced OOP
+Combined <- Combined %>%
+  mutate(hospitalizationcost_reduced = hospitalizationcost)
+
+Combined$hospitalizationcost_reduced <- if_else(Combined$insurance == 'uninsured' & Combined$oop_or_reimbursed == 'OOP', Combined$hospitalizationcost*0.2,
+                                                Combined$hospitalizationcost)
+
+Combined <- Combined %>%
+  mutate(nonicucost_reduced = nonicucost)
+
+Combined$nonicucost_reduced <- if_else(Combined$insurance == 'uninsured' & Combined$oop_or_reimbursed == 'OOP', Combined$nonicucost * 0.2, 
+                                       Combined$nonicucost)
+
+Combined <- Combined %>%
+  mutate(icucost_reduced = icucost)
+
+Combined$icucost_reduced <- if_else(Combined$insurance == 'uninsured' & Combined$oop_or_reimbursed == 'OOP', Combined$icucost*0.2,
+                                    Combined$icucost)
+
 #Capitalize Payer 
 Combined$payer <- str_to_title(Combined$payer)
+
+#Capitalze op in Oop
+Combined$payer[Combined$payer == "Medicaid Oop"] <- "Medicaid OOP"
+Combined$payer[Combined$payer == "Uninsured Oop"] <- "Uninsured OOP"
+Combined$payer[Combined$payer == "Private Oop"] <- "Private OOP"
+Combined$payer[Combined$payer == "Medicare Oop"] <- "Medicare OOP"
+
 
 #Export data to a csv 
 write.csv(Combined, 'Combined.csv')
