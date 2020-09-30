@@ -4,6 +4,7 @@ library(haven)
 library(tidyverse)
 library(RStata)
 library(readr)
+
 Hospitalizations_wave1 <- read_dta("data/Hospitalizations_wave1.dta")
 Hospitalizations_wave1$state <- tolower(Hospitalizations_wave1$location_name)
 View(Hospitalizations_wave1)
@@ -330,6 +331,7 @@ Combined <- Combined %>%
 Combined$hospitalizationcost_reduced <- if_else(Combined$insurance == 'uninsured' & Combined$oop_or_reimbursed == 'OOP', Combined$hospitalizationcost*0.2,
                                                 Combined$hospitalizationcost)
 
+
 Combined <- Combined %>%
   mutate(nonicucost_reduced = nonicucost)
 
@@ -352,6 +354,51 @@ Combined$payer[Combined$payer == "Private Oop"] <- "Private OOP"
 Combined$payer[Combined$payer == "Medicare Oop"] <- "Medicare OOP"
 
 
+
+#Add the difference between normal and reduced for uninsured OOP and add it back into uninsured (re)imbursed
+library('collapse')
+
+Combined_uninsured_oop <- Combined %>% 
+  subset( payer == 'Uninsured OOP')
+
+
+Combined_uninsured_oop$nonicucost <- Combined_uninsured_oop$nonicucost * 0.8
+Combined_uninsured_oop$icucost <- Combined_uninsured_oop$icucost * 0.8
+Combined_uninsured_oop$hospitalizationcost <- Combined_uninsured_oop$hospitalizationcost * 0.8
+
+
+Combined_uninsured_oop <- Combined_uninsured_oop %>%
+  group_by(IHME, Wave, state, location_name, oop_or_reimbursed, insurance, inpatientcost_assumption, uninsured_as) %>%
+  select_at( c('hospitalizationcost', 'icucost' ,'nonicucost'))  %>% fsum
+
+
+Combined_uninsured_oop$oop_or_reimbursed = 'Reimbursed'
+
+#rename vars to reduced 
+
+library("plyr")
+
+Combined_uninsured_oop <- Combined_uninsured_oop %>%
+  rename(c(
+    'hospitalizationcost' = 'hospitalizationcost_reduced',
+    'nonicucost' = 'nonicucost_reduced' ,
+    'icucost' = 'icucost_reduced')
+)
+
+Combined_uninsured_oop$payer <- paste(Combined_uninsured_oop$insurance , Combined_uninsured_oop$oop_or_reimbursed, sep = " ")
+Combined_uninsured_oop$payer <- str_to_title(Combined_uninsured_oop$payer)
+
+Combined <- rbind.fill(Combined, Combined_uninsured_oop)
+
+#drop X1
+Combined <- select(Combined, -X1)
+
+#capitalize insurance
+Combined$insurance <- str_to_title(Combined$insurance)
+
 #Export data to a csv 
 write.csv(Combined, 'Combined.csv')
+
+# remove unneeded dataframes 
+rm(list=(ls()[ls()!="Combined"]))
 
