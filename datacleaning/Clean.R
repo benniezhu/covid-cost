@@ -396,6 +396,9 @@ Combined <- select(Combined, -X1)
 #capitalize insurance
 Combined$insurance <- str_to_title(Combined$insurance)
 
+#Rename Payer uninsured reimbursed to uninsured uncompensated 
+Combined$payer[Combined$payer == "Uninsured Reimbursed"] <- "Uninsured Uncompensated"
+
 #Export data to a csv 
 write.csv(Combined, 'Combined.csv')
 
