@@ -4,7 +4,7 @@ library(tidyverse)
 library(readr)
 
 #Import States
-States <- read_csv("data/States.csv")
+States <- read_csv("States.csv")
 
 
 #Shiny UI
