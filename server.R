@@ -76,9 +76,9 @@ shinyServer(function(input,output){
   
   output$hosp_plot_percapita <- renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
-           aes( x = location_name , y = Hospitalizations/pop , fill = insurance))+
+           aes( x = location_name , y = 100000*(Hospitalizations/pop) , fill = insurance))+
       geom_bar(stat = 'identity')+
-      xlab('State') + ylab('Number of Hospitalizations Per Capita')+labs(fill = 'Insurance')+
+      xlab('State') + ylab('Number of Hospitalizations Per 100k')+labs(fill = 'Insurance')+
       theme(axis.text.x = element_text(angle = 90))+
       scale_fill_manual(breaks = c("Medicaid", "Medicare" , "Private" , "Uninsured"),
                         values = c("red4", "green4", "blue4" , "purple4"))
@@ -86,9 +86,9 @@ shinyServer(function(input,output){
   
   output$nonicuhosp_plot_percapita <- renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost), 
-           aes( x = location_name , y = nonicuhosp/pop , fill = insurance))+
+           aes( x = location_name , y = 100000*(nonicuhosp/pop) , fill = insurance))+
       geom_bar(stat = 'identity')+
-      xlab('State') + ylab('Number of Non ICU Hospitalizations Per Capita')+labs(fill = 'Insurance')+
+      xlab('State') + ylab('Number of Non ICU Hospitalizations Per 100k')+labs(fill = 'Insurance')+
       theme(axis.text.x = element_text(angle = 90))+
       scale_fill_manual(breaks = c("Medicaid", "Medicare" , "Private" , "Uninsured"),
                         values = c("red4", "green4", "blue4" , "purple4"))
@@ -97,9 +97,9 @@ shinyServer(function(input,output){
   
   output$icu_plot_percapita <- renderPlot({
     ggplot(filter(Combined, location_name %in% input$State & IHME == input$IHME & Wave == input$Wave & inpatientcost_assumption == input$inpatientcost & uninsured_as == input$uninsuredinpatientcost),
-           aes(x = location_name, y = ICUs/pop, fill = insurance))+
+           aes(x = location_name, y = 100000*(ICUs/pop), fill = insurance))+
       geom_bar(stat = 'identity')+
-      xlab('State') + ylab('Number of ICU Admissions Per Capita') + labs(fill = 'Insurance')+
+      xlab('State') + ylab('Number of ICU Admissions Per 100k') + labs(fill = 'Insurance')+
       theme(axis.text =  element_text(angle = 90))+
       scale_fill_manual(breaks = c("Medicaid", "Medicare" , "Private" , "Uninsured"),
                         values = c("red4", "green4", "blue4" , "purple4"))

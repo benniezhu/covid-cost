@@ -369,7 +369,7 @@ Combined_uninsured_oop$hospitalizationcost <- Combined_uninsured_oop$hospitaliza
 
 Combined_uninsured_oop <- Combined_uninsured_oop %>%
   group_by(IHME, Wave, state, location_name, oop_or_reimbursed, insurance, inpatientcost_assumption, uninsured_as) %>%
-  select_at( c('hospitalizationcost', 'icucost' ,'nonicucost'))  %>% fsum
+  select_at( c('hospitalizationcost', 'icucost' ,'nonicucost', 'pop'))  %>% fsum
 
 
 Combined_uninsured_oop$oop_or_reimbursed = 'Reimbursed'
@@ -400,7 +400,7 @@ Combined$insurance <- str_to_title(Combined$insurance)
 Combined$payer[Combined$payer == "Uninsured Reimbursed"] <- "Uninsured Uncompensated"
 
 #Export data to a csv 
-write.csv(Combined, 'Combined.csv')
+write.csv(Combined, 'data/Combined.csv')
 
 # remove unneeded dataframes 
 rm(list=(ls()[ls()!="Combined"]))
