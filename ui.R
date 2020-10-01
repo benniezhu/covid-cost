@@ -12,8 +12,6 @@ States <- read_csv("States.csv")
 shinyUI(
   dashboardPage(
     dashboardHeader(title = "State Cost of Covid",
-                    
-                    
                   
                     
                     dropdownMenu(type = 'messages',
@@ -40,6 +38,11 @@ shinyUI(
                     ),
  
     dashboardSidebar(
+      
+      sidebarMenu(
+        menuItem("Counts", tabName = 'counts'),
+        menuItem("Per Capita", tabName = 'percapita')
+      ),
       
       
       selectInput(inputId = "State", "Please Select States",
@@ -71,30 +74,52 @@ shinyUI(
   ),
   
   dashboardBody(
-    fluidRow(
-      box(title = 'Total Hospitalizations', 
-          plotOutput("hosp_plot")),
+    tabItems(
+      tabItem(tabName = 'counts',
+        fluidRow(
+          box(title = 'Total Hospitalizations', 
+            plotOutput("hosp_plot")),
       
-      box(title = 'Total Hospitalizations Cost by Coverage and Payer',
-          plotOutput("hosp_cost_plot")),
+          box(title = 'Total Hospitalizations Cost by Coverage and Payer',
+            plotOutput("hosp_cost_plot")),
       
-      box(title = 'Non-ICU Hospitalizations',
-          plotOutput("nonicuhosp_plot")),
+          box(title = 'Non-ICU Hospitalizations',
+            plotOutput("nonicuhosp_plot")),
       
-      box(title = 'Non-ICU Cost by Coverage and Payer',
-          plotOutput("nonicuhosp_cost_plot")),
-      
-      
-      box(title = 'ICU Admissions',
-          plotOutput("icu_plot")),
-      
-      box(title = 'ICU Admissions Cost by Coverage and Payer',
-          plotOutput("icu_cost_plot"))
+          box(title = 'Non-ICU Cost by Coverage and Payer',
+            plotOutput("nonicuhosp_cost_plot")),
       
       
+          box(title = 'ICU Admissions',
+            plotOutput("icu_plot")),
       
-      
-    )
+          box(title = 'ICU Admissions Cost by Coverage and Payer',
+            plotOutput("icu_cost_plot"))
+                )
+            ),
+      tabItem(tabName = 'percapita',
+              fluidRow(
+                box(title = 'Total Hospitalizations', 
+                    plotOutput("hosp_plot_percapita")),
+                
+                box(title = 'Total Hospitalizations Cost by Coverage and Payer',
+                    plotOutput("hosp_cost_plot_percapita")),
+                
+                box(title = 'Non-ICU Hospitalizations',
+                    plotOutput("nonicuhosp_plot_percapita")),
+                
+                box(title = 'Non-ICU Cost by Coverage and Payer',
+                    plotOutput("nonicuhosp_cost_plot_percapita")),
+                
+                
+                box(title = 'ICU Admissions',
+                    plotOutput("icu_plot_percapita")),
+                
+                box(title = 'ICU Admissions Cost by Coverage and Payer',
+                    plotOutput("icu_cost_plot_percapita"))
+              )
+      )
+      )
   )
 )
 )
