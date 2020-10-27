@@ -5,12 +5,12 @@ library(tidyverse)
 library(RStata)
 library(readr)
 
-Hospitalizations_wave1 <- read_dta("data/Hospitalizations_wave1.dta")
+Hospitalizations_wave1 <- read_dta("data/Hospitalizations_wave1_updated10-27.dta")
 Hospitalizations_wave1$state <- tolower(Hospitalizations_wave1$location_name)
 View(Hospitalizations_wave1)
 
 
-Hospitalizations_wave2 <- read_dta("data/Hospitalizations_wave2.dta")
+Hospitalizations_wave2 <- read_dta("data/Hospitalizations_wave2_updated10-27.dta")
 Hospitalizations_wave2$state <- tolower(Hospitalizations_wave2$location_name)
 View(Hospitalizations_wave2)
 
